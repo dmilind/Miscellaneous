@@ -1,0 +1,31 @@
+{
+  "_comment": "This template is responsible for building a docker image for log host in a pod",
+  "builders": [
+    {
+      "type": "docker",
+      "image": "centos:7",
+      "commit": true,
+      "privileged": true,
+      "changes": [
+        "LABEL maintainer=\"Milind Dhoke <mdhoke@qualys.com>\"",
+        "WORKDIR /opt",
+        "VOLUME /opt /var/log",
+        "EXPOSE 514/udp",
+        "ENTRYPOINT /usr/sbin/syslog-ng --no-caps -F -p /var/run/syslogd.pid "
+      ]
+    }
+  ],
+  "provisioners": [
+    {
+      "type": "ansible",
+      "playbook_file": "../ansible/site.yaml"
+    }
+  ],
+  "post-processors": [
+    {
+      "type": "docker-tag",
+      "repository": "loghost",
+      "tag": "latest"
+   }
+ ]
+}
